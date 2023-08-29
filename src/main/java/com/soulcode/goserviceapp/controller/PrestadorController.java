@@ -98,38 +98,45 @@ public class PrestadorController {
 
     @GetMapping(value = "/agenda")
     public ModelAndView agenda(Authentication authentication) {
-        ModelAndView mv = new ModelAndView();
+        ModelAndView mv = new ModelAndView("agendaPrestador");
         try {
             List<Agendamento> agendamentos = agendamentoService.findByPrestador(authentication);
             mv.addObject("agendamentos", agendamentos);
-        }catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException ex){
+        } catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException ex) {
             mv.addObject("errorMessage", ex.getMessage());
-        }catch (Exception ex){
-            mv.addObject("errorMessage", "Erro ao carregar dados do agendamento.");
+        } catch (Exception ex) {
+            mv.addObject("errorMessage", "Erro ao carregar dados de agendamentos.");
         }
         return mv;
     }
 
     @PostMapping(value = "/agenda/cancelar")
-    public String cancelarAgendamento(@RequestParam(name = "agendamentoId") long agendamentoId, Authentication authentication, RedirectAttributes attributes){
+    public String cancelarAgendamento(
+            @RequestParam(name = "agendamentoId") Long agendamentoId,
+            Authentication authentication,
+            RedirectAttributes attributes) {
         try {
-            agendamentoService.cancelAgendaPrestador(authentication ,agendamentoId);
-            attributes.addFlashAttribute("successMessage", "Agendamento cancelado");
-        }catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException | AgendamentoNaoEncontradoException | StatusAgendamentoImutavelException ex){
+            agendamentoService.cancelAgendaPrestador(authentication, agendamentoId);
+            attributes.addFlashAttribute("successMessage", "Agendamento cancelado.");
+        } catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException |
+                 AgendamentoNaoEncontradoException | StatusAgendamentoImutavelException ex) {
             attributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }catch (Exception ex){
-            attributes.addFlashAttribute("errorMessage", "Erro ao cancelar agendamento");
+        } catch (Exception ex) {
+            attributes.addFlashAttribute("errorMessage", "Erro ao cancelar agendamento.");
         }
         return "redirect:/prestador/agenda";
     }
 
     @PostMapping(value = "/agenda/confirmar")
-    public String confirmarAgendamento(@RequestParam(name = "agendamentoId") Long agendamentoId, Authentication authentication, RedirectAttributes attributes){
+    public String confirmarAgendamento(
+            @RequestParam(name = "agendamentoId") Long agendamentoId,
+            Authentication authentication,
+            RedirectAttributes attributes) {
         try {
             agendamentoService.confirmAgenda(authentication, agendamentoId);
-            attributes.addFlashAttribute("successMessage", "Agendamento confirmado");
-        }catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException |
-                AgendamentoNaoEncontradoException | StatusAgendamentoImutavelException ex) {
+            attributes.addFlashAttribute("successMessage", "Agendamento confirmado.");
+        } catch (UsuarioNaoAutenticadoException | UsuarioNaoEncontradoException |
+                 AgendamentoNaoEncontradoException | StatusAgendamentoImutavelException ex) {
             attributes.addFlashAttribute("errorMessage", ex.getMessage());
         } catch (Exception ex) {
             attributes.addFlashAttribute("errorMessage", "Erro ao confirmar agendamento.");
